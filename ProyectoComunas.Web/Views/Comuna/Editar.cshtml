@@ -1,0 +1,29 @@
+@model ProyectoComunas.Web.Models.Comuna
+@{ ViewData["Title"] = "Editar comuna"; }
+
+<h1>Editar comuna</h1>
+<form asp-action="Editar" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input asp-for="IdComuna" type="hidden" />
+    <input asp-for="IdRegion" type="hidden" />
+
+    <div class="mb-3">
+        <label asp-for="NombreComuna" class="form-label"></label>
+        <input asp-for="NombreComuna" class="form-control" />
+        <span asp-validation-for="NombreComuna" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="InformacionAdicional" class="form-label"></label>
+        <textarea asp-for="InformacionAdicional"
+                  class="form-control font-monospace" rows="8"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" asp-route-idRegion="@Model.IdRegion"
+       class="btn btn-outline-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
