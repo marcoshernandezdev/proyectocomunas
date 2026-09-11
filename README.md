@@ -136,3 +136,26 @@ Swagger permite revisar y ejecutar los endpoints desde el navegador y comprobar 
 ## Nota sobre la versión de SQL Server
 
 La solución y los scripts SQL se han validado y están orientados a Microsoft SQL Server 2019. En concreto se está utilizando la versión:
+
+## Contribución y uso de herramientas
+
+Este proyecto fue implementado y probado por Marcos Hernández. Se permitió el uso de asistentes de IA (por ejemplo GitHub Copilot / ChatGPT) como apoyo para acelerar tareas. Todas las decisiones finales, la integración, la revisión de código, las correcciones y las pruebas fueron realizadas por mí.
+
+Cambios principales realizados:
+- Implementación de endpoints de API para Regiones y Comunas.
+- Integración entre Web MVC y API.
+- Validaciones, manejo de errores y pruebas unitarias con xUnit.
+- Scripts SQL para creación/poblado de base de datos y procedimientos almacenados
+
+## Uso de IA y responsabilidad
+
+Durante la realización de esta prueba técnica se permitió el uso de asistentes de inteligencia artificial (por ejemplo, GitHub Copilot y ChatGPT) como herramientas de apoyo. Sin embargo, todas las decisiones finales, la integración, la revisión de código, las mejoras, las correcciones y las pruebas (unitarias y manuales) fueron realizadas por mí.
+
+Puntos clave:
+
+- Asistentes de IA se usaron únicamente como apoyo para generar sugerencias y acelerar tareas.
+- Yo validé, adapté y revisé todo el código antes de integrarlo en el repositorio.
+- Se implementaron pruebas unitarias con xUnit y se realizaron pruebas manuales para verificar los endpoints de la API y la interfaz Web.
+- Si el reclutador o el equipo lo solicita, puedo explicar en detalle cualquier parte del código, las decisiones de diseño y las pruebas realizadas.
+
+Nota: se incluyó esta mención en el README para mantener transparencia sobre el uso de herramientas de asistencia durante el test.
