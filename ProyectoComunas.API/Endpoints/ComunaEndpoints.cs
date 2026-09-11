@@ -9,9 +9,10 @@ public static class ComunaEndpoints
         this IEndpointRouteBuilder app)
     {
         var group = app
-            .MapGroup("/api/regiones/{idRegion:int}/comunas")
+            .MapGroup("/api/region/{idRegion:int}/comuna")
             .WithTags("Comunas");
 
+        // GET /api/region/{idRegion}/comuna
         group.MapGet("/", async (
             int idRegion,
             ComunaSP comunaSP,
@@ -36,6 +37,7 @@ public static class ComunaEndpoints
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
 
+        // GET /api/region/{idRegion}/comuna/{idComuna}
         group.MapGet("/{idComuna:int}", async (
             int idRegion,
             int idComuna,
@@ -51,6 +53,7 @@ public static class ComunaEndpoints
             }
 
             var comuna = await comunaSP.ObtenerPorIdAsync(
+                idRegion,
                 idComuna,
                 cancellationToken);
 
@@ -58,8 +61,7 @@ public static class ComunaEndpoints
             {
                 return Results.NotFound(new
                 {
-                    mensaje = $"No se encontró la comuna {idComuna} " +
-                              $"en la región {idRegion}."
+                    mensaje = $"No se encontró la comuna {idComuna} en la región {idRegion}."
                 });
             }
 
@@ -71,26 +73,18 @@ public static class ComunaEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status404NotFound);
 
-        group.MapPut("/{idComuna:int}", async (
+        // POST /api/region/{idRegion}/comuna
+        group.MapPost("/", async (
             int idRegion,
-            int idComuna,
             Comuna comuna,
             ComunaSP comunaSP,
             CancellationToken cancellationToken) =>
         {
-            if (idRegion <= 0 || idComuna <= 0)
+            if (idRegion <= 0)
             {
                 return Results.BadRequest(new
                 {
-                    mensaje = "Los identificadores deben ser mayores que cero."
-                });
-            }
-
-            if (comuna.IdComuna != 0 && comuna.IdComuna != idComuna)
-            {
-                return Results.BadRequest(new
-                {
-                    mensaje = "El IdComuna del cuerpo no coincide con la URL."
+                    mensaje = "El identificador de la región debe ser mayor que cero."
                 });
             }
 
@@ -103,7 +97,6 @@ public static class ComunaEndpoints
                 });
             }
 
-            comuna.IdComuna = idComuna;
             comuna.IdRegion = idRegion;
 
             await comunaSP.GuardarAsync(
@@ -111,8 +104,10 @@ public static class ComunaEndpoints
                 comuna,
                 cancellationToken);
 
+            // Recupera la comuna actualizada (el SP usa MERGE)
             var comunaActualizada = await comunaSP.ObtenerPorIdAsync(
-                idComuna,
+                idRegion,
+                comuna.IdComuna,
                 cancellationToken);
 
             return comunaActualizada is null

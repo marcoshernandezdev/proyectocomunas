@@ -1,17 +1,14 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("ApiClient", (serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-    var apiKey = configuration["ApiSettings:ApiKey"]; // Un Token fijo para pruebas. Lo mejor es usar JWT o OAuth2
 
     var baseUrl = configuration["ApiSettings:BaseUrl"]
-        ?? throw new InvalidOperationException("No se configuró ApiSettings:BaseUrl.");
+        ?? "https://localhost:5001"; 
     client.BaseAddress = new Uri(baseUrl);
-    client.DefaultRequestHeaders.Add("Accept", "application/json");
-    client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");    
 });
 
 var app = builder.Build();
@@ -19,7 +16,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

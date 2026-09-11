@@ -1,81 +1,138 @@
 # Proyecto Comunas de Chile
 
-Este es un proyecto simple desarrollado en **.NET 8** que permite consultar las regiones y comunas de Chile. Además, incluye la funcionalidad para editar las comunas. El proyecto está dividido en tres capas principales: **Datos**, **API** y **Web**.
+Solución desarrollada en **.NET 8 o superior** para consultar las regiones y comunas de Chile y actualizar la información de una comuna. La aplicación utiliza una API REST, una interfaz web MVC y una biblioteca de acceso a datos con Entity Framework Core.
 
-## Estructura del Proyecto
+## Arquitectura de la solución
 
-### 1. **Datos**
-Biblioteca de clases para la conexión a una base de datos **SQL Server**. Este proyecto se encarga de consumir procedimientos almacenados para realizar las operaciones necesarias.  
-**Estado actual:**
-- La conexión está configurada para SQL Server LocalDB.
-- Todas las operaciones de lectura y actualización se realizan mediante procedimientos almacenados.
+La solución está compuesta por tres proyectos:
 
-### 2. **API**
-Servicio **REST API** que utiliza el proyecto **Datos** para exponer los resultados en formato **JSON**.  
-**Características:**
-- Implementa una **API Key configurable** para la autenticación básica.
-- Incluye registro de logs para monitorear las operaciones.
+- **ProyectoComunas.Datos**: biblioteca de clases responsable del modelo de datos, la configuración de Entity Framework Core y la ejecución de procedimientos almacenados.
+- **ProyectoComunas.API**: Minimal API que expone las operaciones de regiones y comunas en formato JSON.
+- **ProyectoComunas.Web**: aplicación ASP.NET Core MVC con Razor Views que consume exclusivamente los servicios publicados por la API.
 
-### 3. **Web**
-Capa de presentación desarrollada en **ASP.NET Core Razor Pages**, con una estructura y diseño similar a **.NET Core 3.1**.  
-**Estado actual:**
-- Consume los servicios REST de la API.
-- La configuración de la API se mantiene fuera de los controladores.
+El acceso a SQL Server se realiza mediante procedimientos almacenados. La actualización de una comuna se procesa en la base de datos mediante una sentencia `MERGE`.
 
-## Scripts de Base de Datos
-Los scripts necesarios para crear la base de datos y los procedimientos almacenados se encuentran en la carpeta `T-SQL`.
+## Tecnologías
 
-## Tecnologías Utilizadas
-- **.NET 8** para todos los proyectos.
-- **SQL Server** como base de datos (pendiente de implementación).
-- **NLog** para el registro de logs en los proyectos **API** y **Datos**.
+- .NET 8 o superior
+- ASP.NET Core Minimal API
+- ASP.NET Core MVC y Razor Views
+- Entity Framework Core 8
+- SQL Server LocalDB
+- Procedimientos almacenados y `MERGE`
+- Swagger/OpenAPI
+- Bootstrap
+
+## Requisitos
+
+- Visual Studio 2022 con la carga de trabajo **Desarrollo de ASP.NET y web**.
+- SDK de .NET 8.
+- SQL Server Express LocalDB o una instancia compatible con SQL Server 2012 o superior.
+- SQL Server Management Studio es opcional, pero recomendado para ejecutar y verificar los scripts.
+
+## Preparación de la base de datos
+
+La instancia configurada por defecto es:
+
+```text
+(localdb)\MSSQLLocalDB
+```
+
+Desde SQL Server Management Studio, Azure Data Studio o `sqlcmd`, ejecutar los archivos de la carpeta `T-SQL` en el siguiente orden:
+
+1. `T-SQL/00-BaseDeDatos/001-CrearBdd.sql`
+2. `T-SQL/01-Table/011-crearTablas.sql`
+3. `T-SQL/02-PoblarT/021-Poblar_region_comunas.sql`
+4. Los archivos de `T-SQL/03-SP`, desde `031` hasta `035`.
+
+Los scripts crean la base de datos `ProyectoComunas`, las tablas `Region` y `Comuna`, los datos iniciales y los siguientes procedimientos almacenados:
+
+- `pc_Region_ObtenerTodos`
+- `pc_Region_ObtenerPorId`
+- `pc_Comuna_ObtenerPorRegion`
+- `pc_Comuna_ObtenerPorId`
+- `pc_Comuna_Guardar`
+
+La columna `InformacionAdicional` utiliza el tipo `XML` de SQL Server.
+
+El formato utilizado para la información adicional es:
+
+```xml
+<Info>
+  <Superficie>4799.4</Superficie>
+  <Poblacion Densidad="51.6">247552</Poblacion>
+</Info>
+```
 
 ## Configuración
-Los nombres de los procedimientos se encuentran en `ProyectoComunas.API/appsettings.json`.
-Si la base usa otra nomenclatura, se modifican allí sin cambiar el código C#.
 
-## Cómo Ejecutar el Proyecto
-1. Clonar este repositorio.
-2. Configurar el entorno de desarrollo con **Visual Studio 2022**.
-3. Ejecutar los proyectos en el siguiente orden:
-   - Ejecutar los scripts de la carpeta `T-SQL`.
-   - Iniciar **API**.
-   - Iniciar **Web**.
+La cadena de conexión y los nombres de los procedimientos almacenados se encuentran en `ProyectoComunas.API/appsettings.json`:
 
----
-
-## 🧪 API - Pruebas con Swagger (OpenAPI)
-
-Este proyecto incluye documentación interactiva de la API mediante **Swagger (OpenAPI)**. Puedes usar esta interfaz para:
-
-- Ver todos los endpoints disponibles
-- Probar directamente las consultas desde el navegador
-- Agregar autenticación con un token para acceder a los métodos protegidos
-
-### 🔐 Token para pruebas
-
-Para consumir los endpoints protegidos, debes ingresar el siguiente token en Swagger UI:
-
-```
-YoSoyTuToken!
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=ProyectoComunas;Trusted_Connection=True;TrustServerCertificate=True"
+  }
+}
 ```
 
-Haz clic en el botón **Authorize** (candado), pega el token y luego realiza tus pruebas.
+La aplicación Web obtiene la dirección de la API desde `ProyectoComunas.Web/appsettings.json`. La URL debe coincidir con el perfil utilizado para iniciar la API:
 
-### 📸 Capturas de Swagger UI
+```json
+{
+  "ApiSettings": {
+    "BaseUrl": "http://localhost:5072"
+  }
+}
+```
 
-- **📋 Endpoints disponibles:**
+## Ejecución
 
-  ![Swagger Endpoints](docs/img/swagger-endpoints.png)
+1. Abrir `ProyectoComunas.sln` en Visual Studio 2022.
+2. Restaurar los paquetes NuGet.
+3. Verificar que la instancia LocalDB esté iniciada:
 
-- **🔑 Ingreso del Token:**
+   ```powershell
+   sqllocaldb start MSSQLLocalDB
+   ```
 
-  ![Swagger Token Auth](docs/img/swagger-token.png)
+4. Ejecutar los scripts SQL en el orden indicado.
+5. Configurar como proyectos de inicio múltiple:
+   - `ProyectoComunas.API`
+   - `ProyectoComunas.Web`
+6. Iniciar ambos proyectos.
 
-- **🌍 Consumo del endpoint de regiones:**
+Con los perfiles HTTP incluidos, las direcciones predeterminadas son:
 
-  ![Swagger Lista Regiones](docs/img/swagger-regiones.png)
+- API y Swagger: `http://localhost:5072/swagger`
+- Aplicación Web: `http://localhost:5268`
 
----
+## Endpoints principales
 
-¡Gracias por revisar este proyecto! Si tienes sugerencias o mejoras, no dudes en contribuir.
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/region` | Obtiene todas las regiones. |
+| `GET` | `/api/region/{idRegion}` | Obtiene una región por su identificador. |
+| `GET` | `/api/region/{idRegion}/comuna` | Obtiene las comunas de una región. |
+| `GET` | `/api/region/{idRegion}/comuna/{idComuna}` | Obtiene una comuna determinada. |
+| `POST` | `/api/region/{idRegion}/comuna` | Actualiza una comuna mediante el procedimiento almacenado con `MERGE`. |
+
+Las respuestas de la API se entregan en formato JSON y utilizan códigos HTTP para informar el resultado de cada operación.
+
+## Pruebas con Swagger
+
+Swagger permite revisar y ejecutar los endpoints desde el navegador y comprobar las respuestas JSON y los códigos HTTP.
+
+### Capturas
+
+#### Endpoints disponibles
+
+![Endpoints disponibles en Swagger](docs/img/swagger-endpoints.png)
+
+#### Consulta de regiones
+
+![Resultado del endpoint de regiones](docs/img/swagger-regiones.png)
+
+## Nota sobre la versión de SQL Server
+
+La solución y los scripts SQL se han validado y están orientados a Microsoft SQL Server 2019. En concreto se está utilizando la versión:
