@@ -8,7 +8,7 @@ public static class RegionEndpoints
         this IEndpointRouteBuilder app)
     {
         var group = app
-            .MapGroup("/api/regiones")
+            .MapGroup("/api/region")
             .WithTags("Regiones");
 
         group.MapGet("/", async (
