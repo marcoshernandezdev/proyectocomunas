@@ -1,8 +1,34 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-5">
+    <div class="text-center">
+        <h1 class="display-4">Proyecto Comunas — Prueba técnica (.NET)</h1>
+        <p class="lead">
+            Esta solución es una prueba técnica para un cargo de desarrollador .NET.
+            Incluye una API minimal con endpoints para regiones y comunas, acceso a base
+            de datos vía Entity Framework y procedimientos almacenados, así como una
+            interfaz Web MVC que consume la API. También dispone de pruebas unitarias con xUnit.
+        </p>
+
+        <p>
+            Objetivos principales:
+        </p>
+        <ul class="list-unstyled">
+            <li>- Implementar y exponer API REST (endpoints para regiones y comunas).</li>
+            <li>- Consumir la API desde la aplicación Web (MVC/Razor).</li>
+            <li>- Persistir datos mediante EF Core y procedimientos almacenados.</li>
+            <li>- Probar con xUnit y, opcionalmente, pruebas de integración.</li>
+        </ul>
+
+        <div class="mt-4">
+            <a asp-controller="Region" asp-action="Index" class="btn btn-primary me-2">Ver Regiones (Web)</a>
+            <a href="https://localhost:7298/swagger/index.html" target="_blank" class="btn btn-outline-secondary">Abrir Swagger (API)</a>
+        </div>
+
+        <small class="d-block text-muted mt-3">
+            Nota: si tu API corre en otro puerto, actualiza el enlace de Swagger o la configuración `ApiSettings:BaseUrl`.
+        </small>
+    </div>
 </div>
