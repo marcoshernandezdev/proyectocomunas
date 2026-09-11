@@ -1,0 +1,38 @@
+name: Validación .NET 8
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v7
+
+      - name: Instalar .NET 8
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar paquetes
+        run: dotnet restore ProyectoComunas.sln
+
+      - name: Compilar solución
+        run: dotnet build ProyectoComunas.sln --configuration Release --no-restore
+
+      - name: Ejecutar pruebas xUnit
+        run: dotnet test ProyectoComunas.sln --configuration Release --no-build --verbosity normal
